@@ -1,0 +1,37 @@
+{
+    "name": "jeremykendall/password-validator",
+    "description": "Password Validator *validates* `password_hash` generated passwords, *rehashes* passwords as necessary, and will *upgrade* legacy passwords.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeremy Kendall",
+            "homepage": "http://about.me/jeremykendall",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "validator",
+        "validation",
+        "password",
+        "password_hash",
+        "rehash",
+        "upgrade"
+    ],
+    "bin": [
+        "bin/cost-check",
+        "bin/version-check"
+    ],
+    "require": {
+        "php": ">=5.3",
+        "ircmaxell/password-compat": "1.*",
+        "wp-cli/php-cli-tools": "v0.9.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "JeremyKendall\\Password\\": "src/"
+        }
+    }
+}

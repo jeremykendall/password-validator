@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Password Validator
+ *
+ * @link      http://github.com/jeremykendall/authentication Canonical source repo
+ * @copyright Copyright (c) 2013 Jeremy Kendall (http://about.me/jeremykendall)
+ * @license   http://github.com/jeremykendall/authentication/blob/master/LICENSE MIT
+ */
+
+/**
+ * Adapted from password_hash documentation, Example #4
+ * @see http://www.php.net/manual/en/function.password-hash.php
+ *
+ * This code will benchmark your server to determine how high of a cost you can
+ * afford. You want to set the highest cost that you can without slowing down
+ * you server too much. 10 is a good baseline, and more is good if your servers
+ * are fast enough.
+ */
+
+if (is_dir($vendor = __DIR__.'/../vendor')) {
+    require($vendor.'/autoload.php');
+} elseif (is_dir($vendor = __DIR__.'/../../../../vendor')) {
+    require($vendor.'/autoload.php');
+} else {
+    die(
+        'You must set up the project dependencies, run the following commands:'.PHP_EOL.
+        'curl -s http://getcomposer.org/installer | php'.PHP_EOL.
+        'php composer.phar install'.PHP_EOL
+    );
+}
+
+$timeTarget = 0.2; 
+$cost = 9;
+
+if (isset($argv[1])) {
+    $timeTarget = $argv[1];
+}
+
+do {
+    $cost++;
+    $start = microtime(true);
+    password_hash("test", PASSWORD_DEFAULT, array("cost" => $cost));
+    $end = microtime(true);
+} while (($end - $start) < $timeTarget);
+
+\cli\line("%yAppropriate 'PASSWORD_DEFAULT' Cost Found:%y %2%k $cost %2%k%n");
