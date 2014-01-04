@@ -1,6 +1,6 @@
 {
     "name": "jeremykendall/password-validator",
-    "description": "Password Validator *validates* `password_hash` generated passwords, *rehashes* passwords as necessary, and will *upgrade* legacy passwords.",
+    "description": "Password Validator validates password_hash generated passwords, rehashes passwords as necessary, and will upgrade legacy passwords.",
     "license": "MIT",
     "authors": [
         {
