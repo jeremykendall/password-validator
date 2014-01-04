@@ -55,18 +55,6 @@ $validator->setOptions($options);
 your passwords will be rehashed with a cost of `10` *unless* you set the cost
 using `PasswordValidator::setOptions()`.
 
-#### Validation Result
-
-Each validation attempt returns a `Result` object. The object provides some
-introspection into the status of the validation process.
-
-* `Result::isValid()` will return `true` if the attempt was successful
-* `Result::getCode()` will return one of three possible `int` codes:
-    * `Result::SUCCESS` if the validation attempt was successful
-    * `Result::SUCCESS_PASSWORD_REHASHED` if the attempt was successful and the password was rehashed
-    * `Result::FAILURE_PASSWORD_INVALID` if the attempt was unsuccessful
-* `Result::getPassword()` will return the rehashed password, but only if the password was rehashed
-
 ### Rehashing
 
 Each valid password is tested using [`password_needs_rehash`][4]. If a rehash
@@ -109,17 +97,29 @@ $validator = new UpgradeDecorator(new PasswordValidator(), $callback);
 ```
 
 The `UpgradeDecorator` will validate a user's current password using the
-callback validator.  If the user's password is valid, it will be hashed with
+callback.  If the user's password is valid, it will be hashed with
 `password_hash` and returned in the `Result` object, as above.
 
 If the callback determines the password is invalid, the password will be passed
 along to the `PasswordValidator` in case it's already been upgraded.
 
+### Validation Results
+
+Each validation attempt returns a `Result` object. The object provides some
+introspection into the status of the validation process.
+
+* `Result::isValid()` will return `true` if the attempt was successful
+* `Result::getCode()` will return one of three possible `int` codes:
+    * `Result::SUCCESS` if the validation attempt was successful
+    * `Result::SUCCESS_PASSWORD_REHASHED` if the attempt was successful and the password was rehashed
+    * `Result::FAILURE_PASSWORD_INVALID` if the attempt was unsuccessful
+* `Result::getPassword()` will return the rehashed password, but only if the password was rehashed
+
 ### Database Schema Changes
 
-**IMPORTANT**: Because this library uses the `PASSWORD_DEFAULT` algorithm, it's
-important your password field be `VARCHAR(255)` to account for future updates
-to the default password hashing algorithm.
+As mentioned above, because this library uses the `PASSWORD_DEFAULT` algorithm,
+it's important your password field be `VARCHAR(255)` to account for future
+updates to the default password hashing algorithm.
 
 ## Helper Scripts
 
