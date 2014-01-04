@@ -1,4 +1,4 @@
-# Password Validator
+# Password Validator [![Build Status](https://travis-ci.org/jeremykendall/password-validator.png?branch=master)](https://travis-ci.org/jeremykendall/password-validator)
 
 **Password Validator** *validates* `password_hash` generated passwords, *rehashes*
 passwords as necessary, and will *upgrade* legacy passwords.
