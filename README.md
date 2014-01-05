@@ -158,7 +158,7 @@ With your `UserDao` in hand, you're ready to decorate a
 `PasswordValidatorInterface`.
 
 ``` php
-use Example\UserDao();
+use Example\UserDao;
 use JeremyKendall\Password\Decorator\StorageDecorator;
 
 $storage = new UserDao($db);
