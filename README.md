@@ -64,7 +64,7 @@ returned from `Result::getCode()` and the new password hash is available via
 `Result::getPassword()`.
 
 ``` php
-if ($result->isValid() && $result->getCode() == Result::SUCCESS_PASSWORD_REHASHED) {
+if ($result->getCode() === Result::SUCCESS_PASSWORD_REHASHED) {
     $rehashedPassword = $result->getPassword();
     // Persist rehashed password
 }
@@ -97,16 +97,85 @@ $validator = new UpgradeDecorator(new PasswordValidator(), $callback);
 ```
 
 The `UpgradeDecorator` will validate a user's current password using the
-callback.  If the user's password is valid, it will be hashed with
+provided callback.  If the user's password is valid, it will be hashed with
 `password_hash` and returned in the `Result` object, as above.
 
-If the callback determines the password is invalid, the password will be passed
-along to the `PasswordValidator` in case it's already been upgraded.
+All password validation attempts will eventually pass through the
+`PasswordValidator`. This allows a password that has already been upgraded to
+be properly validated, even when using the `UpgradeDecorator`.
+
+### Persisting Rehashed Passwords
+
+Whenever a validation attempt returns `Result::SUCCESS_PASSWORD_REHASHED`, it's
+important to persist the updated password hash.
+
+``` php
+if ($result->getCode() === Result::SUCCESS_PASSWORD_REHASHED) {
+    $rehashedPassword = $result->getPassword();
+    // Persist rehashed password
+}
+```
+
+While you can always perform the test and then update your user database
+manually, if you choose to use the **Storage Decorator** all rehashed passwords
+will be automatically persisted.
+
+The Storage Decorator takes two constructor arguments: An instance of
+`PasswordValidatorInterface` and an instance of the
+`JeremyKendall\Password\Storage\StorageInterface`.
+
+#### StorageInterface
+
+The `StorageInterface` includes a single method, `updatePassword()`. A class
+honoring the interface might look like this:
+
+``` php
+<?php
+
+namespace Example;
+
+use JeremyKendall\Password\Storage\StorageInterface;
+
+class UserDao implements StorageInterface
+{
+    public function __construct(\PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public function updatePassword($identity, $password)
+    {
+        $sql = 'UPDATE users SET password = :password WHERE username = :identity';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array('password' => $password, 'username' => $identity));
+    }
+}
+```
+
+#### Storage Decorator
+
+With your `UserDao` in hand, you're ready to decorate a
+`PasswordValidatorInterface`.
+
+``` php
+use Example\UserDao();
+use JeremyKendall\Password\Decorator\StorageDecorator;
+
+$storage = new UserDao($db);
+$validator = new StorageDecorator(new PasswordValidator(), $storage);
+
+// If validation results in a rehash, the new password hash will be persisted
+$result = $validator->isValid('password', 'passwordHash', 'username');
+```
+
+**IMPORTANT**: You must pass the optional third argument (`$identity`) to
+`isValid()` when calling `StorageDecorator::isValid()`.  If you do not do so,
+the `StorageDecorator` will throw an `IdentityMissingException`.
 
 ### Validation Results
 
-Each validation attempt returns a `Result` object. The object provides some
-introspection into the status of the validation process.
+Each validation attempt returns a `JeremyKendall\Password\Result` object. The
+object provides some introspection into the status of the validation process.
 
 * `Result::isValid()` will return `true` if the attempt was successful
 * `Result::getCode()` will return one of three possible `int` codes:
