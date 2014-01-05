@@ -24,26 +24,35 @@ class PasswordValidator implements PasswordValidatorInterface
     protected $options = array();
 
     /**
+     * @var array Result info
+     */
+    protected $resultInfo = array();
+
+    /**
      * {@inheritDoc}
      */
-    public function isValid($password, $passwordHash)
+    public function isValid($password, $passwordHash, $identity = null)
     {
-        $code = ValidationResult::FAILURE_PASSWORD_INVALID;
-        $newHash = null;
+        $this->resultInfo = array(
+            'code' => ValidationResult::FAILURE_PASSWORD_INVALID,
+            'password' => null,
+        );
 
         $isValid = password_verify($password, $passwordHash);
         $needsRehash = password_needs_rehash($passwordHash, PASSWORD_DEFAULT);
 
         if ($isValid === true) {
-            $code = ValidationResult::SUCCESS;
+            $this->resultInfo['code'] = ValidationResult::SUCCESS;
         }
 
         if ($isValid === true && $needsRehash === true) {
             $newHash = $this->rehash($password);
-            $code = ValidationResult::SUCCESS_PASSWORD_REHASHED;
         }
 
-        return new ValidationResult($code, $newHash);
+        return new ValidationResult(
+            $this->resultInfo['code'],
+            $this->resultInfo['password']
+        );
     }
 
     /**
@@ -63,6 +72,12 @@ class PasswordValidator implements PasswordValidatorInterface
             throw new PasswordHashFailureException('password_hash returned false.');
         }
         // @codeCoverageIgnoreEnd
+
+        $this->resultInfo = array(
+            'code' => ValidationResult::SUCCESS_PASSWORD_REHASHED,
+            'password' => $hash,
+        );
+
         return $hash;
     }
 

@@ -43,25 +43,34 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function testPasswordValidAndPasswordRehashed()
     {
-        $passwordHash = hash('sha512', 'password');
+        $password = 'password';
+        $passwordHash = hash('sha512', $password);
+        $upgradeRehash = password_hash($password, PASSWORD_DEFAULT, array(
+            'cost' => 4,
+            'salt' => 'CostAndSaltForceRehash',
+        ));
 
-        $passwordHashCallback = function () { 
-            return password_hash('password', PASSWORD_DEFAULT); 
-        };
+        $validatorRehash = password_hash($password, PASSWORD_DEFAULT);
+
+        $result = new ValidationResult(
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
+            $validatorRehash
+        );
 
         $this->decoratedValidator->expects($this->once())
-            ->method('rehash')
-            ->with('password')
-            ->will($this->returnCallback($passwordHashCallback));
+            ->method('isValid')
+            ->with($password, $upgradeRehash)
+            ->will($this->returnValue($result));
 
-        $result = $this->decorator->isValid('password', $passwordHash);
+        $result = $this->decorator->isValid($password, $passwordHash);
+
         $this->assertTrue($result->isValid());
         $this->assertEquals(
             ValidationResult::SUCCESS_PASSWORD_REHASHED, 
             $result->getCode()
         );
         // Rehashed password is a valid hash
-        $this->assertTrue(password_verify('password', $result->getPassword()));
+        $this->assertTrue(password_verify($password, $result->getPassword()));
     }
 
     public function testLegacyPasswordInvalidDecoratedValidatorTakesOver()

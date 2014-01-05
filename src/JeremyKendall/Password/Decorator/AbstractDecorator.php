@@ -35,9 +35,9 @@ abstract class AbstractDecorator implements PasswordValidatorInterface
     /**
      * {@inheritDoc}
      */
-    public function isValid($password, $passwordHash)
+    public function isValid($password, $passwordHash, $identity = null)
     {
-        return $this->validator->isValid($password, $passwordHash);
+        return $this->validator->isValid($password, $passwordHash, $identity);
     }
 
     /**

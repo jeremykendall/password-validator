@@ -11,7 +11,6 @@
 namespace JeremyKendall\Password\Decorator;
 
 use JeremyKendall\Password\PasswordValidatorInterface;
-use JeremyKendall\Password\Result as ValidationResult;
 
 /**
  * Validates user's password using a callback and upgrades password hash using
@@ -39,7 +38,7 @@ class UpgradeDecorator extends AbstractDecorator
     /**
      * {@inheritDoc}
      */
-    public function isValid($password, $passwordHash)
+    public function isValid($password, $passwordHash, $identity = null)
     {
         $isValid = call_user_func(
             $this->validationCallback,
@@ -47,15 +46,13 @@ class UpgradeDecorator extends AbstractDecorator
             $passwordHash
         );
 
-        if ($isValid === false) {
-            return parent::isValid($password, $passwordHash);
+        if ($isValid === true) {
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT, array(
+                'cost' => 4,
+                'salt' => 'CostAndSaltForceRehash',
+            ));
         }
 
-        $hash = $this->rehash($password);
-
-        return new ValidationResult(
-            ValidationResult::SUCCESS_PASSWORD_REHASHED,
-            $hash
-        );
+        return $this->validator->isValid($password, $passwordHash, $identity);
     }
 }

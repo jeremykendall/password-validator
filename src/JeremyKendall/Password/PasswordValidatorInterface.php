@@ -20,9 +20,10 @@ interface PasswordValidatorInterface
      *
      * @param  string          $password     Password provided by user during login
      * @param  string          $passwordHash User's current hashed password
+     * @param  string          $identity     OPTIONAL unique user identifier
      * @return Password\Result
      */
-    public function isValid($password, $passwordHash);
+    public function isValid($password, $passwordHash, $identity = null);
 
     /**
      * Hashes password using password_hash. Uses PASSWORD_DEFAULT encryption.
