@@ -1,6 +1,11 @@
 {
     "name": "jeremykendall/password-validator",
     "description": "Password Validator validates password_hash generated passwords, rehashes passwords as necessary, and will upgrade legacy passwords.",
+    "homepage": "https://github.com/jeremykendall/password-validator",
+    "support": {
+        "issues": "https://github.com/jeremykendall/password-validator/issues",
+        "source": "https://github.com/jeremykendall/password-validator"
+    },
     "license": "MIT",
     "authors": [
         {
@@ -10,19 +15,19 @@
         }
     ],
     "keywords": [
-        "validator",
-        "validation",
         "password",
+        "passwords",
+        "password validator",
+        "password validation",
         "password_hash",
-        "rehash",
-        "upgrade"
+        "security"
     ],
     "bin": [
         "bin/cost-check",
         "bin/version-check"
     ],
     "require": {
-        "php": ">=5.3",
+        "php": ">=5.3.7",
         "ircmaxell/password-compat": "1.*",
         "wp-cli/php-cli-tools": "v0.9.4"
     },
