@@ -3,7 +3,7 @@
 **Password Validator** *validates* [`password_hash`][2] generated passwords, *rehashes*
 passwords as necessary, and will *upgrade* legacy passwords.
 
-Read the introductory blog post: [PHP Password Hashing: A Dead Simple Implementation][1]
+Read the introductory blog post: [PHP Password Hashing: A Dead Simple Implementation][9]
 
 *Password Validator is available for all versions of PHP >= 5.3.7.*
 
