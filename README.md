@@ -1,7 +1,11 @@
 # Password Validator [![Build Status](https://travis-ci.org/jeremykendall/password-validator.png?branch=master)](https://travis-ci.org/jeremykendall/password-validator)
 
-**Password Validator** *validates* `password_hash` generated passwords, *rehashes*
+**Password Validator** *validates* [`password_hash`][2] generated passwords, *rehashes*
 passwords as necessary, and will *upgrade* legacy passwords.
+
+Read the introductory blog post: [PHP Password Hashing: A Dead Simple Implementation][1]
+
+*Password Validator is available for all versions of PHP >= 5.3.7.*
 
 ## Motivation
 
@@ -258,3 +262,4 @@ submitting pull requests.
 [6]: http://en.wikipedia.org/wiki/Decorator_pattern
 [7]: http://csiphp.com/blog/2012/02/16/encrypt-passwords-for-highest-level-of-security/
 [8]: http://php.net/password_hash#example-875
+[9]: http://jeremykendall.net/2014/01/04/php-password-hashing-a-dead-simple-implementation/
