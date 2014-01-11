@@ -21,12 +21,31 @@
         "bin/cost-check",
         "bin/version-check"
     ],
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "openwall/phpass",
+                "version": "0.3",
+                "dist": {
+                    "url": "http://www.openwall.com/phpass/phpass-0.3.tar.gz",
+                    "type": "tar"
+                },
+                "autoload": {
+                    "classmap": [
+                        "PasswordHash.php"
+                    ]
+                }
+            }
+        }
+    ],
     "require": {
         "php": ">=5.3",
         "ircmaxell/password-compat": "1.*",
         "wp-cli/php-cli-tools": "v0.9.4"
     },
     "require-dev": {
+        "openwall/phpass": "0.3",
         "phpunit/phpunit": "3.*"
     },
     "autoload": {
