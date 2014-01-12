@@ -1,4 +1,4 @@
-# Password Validator [![Build Status](https://travis-ci.org/jeremykendall/password-validator.png?branch=master)](https://travis-ci.org/jeremykendall/password-validator)
+# Password Validator [![Build Status](https://travis-ci.org/jeremykendall/password-validator.png?branch=master)](https://travis-ci.org/jeremykendall/password-validator) [![Coverage Status](https://coveralls.io/repos/jeremykendall/password-validator/badge.png?branch=master)](https://coveralls.io/r/jeremykendall/password-validator?branch=master)
 
 **Password Validator** *validates* [`password_hash`][2] generated passwords, *rehashes*
 passwords as necessary, and will *upgrade* legacy passwords.
