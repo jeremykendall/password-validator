@@ -21,7 +21,7 @@ use JeremyKendall\Password\Storage\StorageInterface;
 class StorageDecorator extends AbstractDecorator
 {
     /**
-     * @var callback Legacy password validation via callback
+     * @var StorageInterface Instance of class implementing StorageInterface
      */
     protected $storage;
 
