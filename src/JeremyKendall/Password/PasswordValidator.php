@@ -46,7 +46,7 @@ class PasswordValidator implements PasswordValidatorInterface
         }
 
         if ($isValid === true && $needsRehash === true) {
-            $newHash = $this->rehash($password);
+            $this->rehash($password);
         }
 
         return new ValidationResult(
