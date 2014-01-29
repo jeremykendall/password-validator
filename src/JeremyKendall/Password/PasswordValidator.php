@@ -39,7 +39,12 @@ class PasswordValidator implements PasswordValidatorInterface
         );
 
         $isValid = password_verify($password, $passwordHash);
-        $needsRehash = password_needs_rehash($passwordHash, PASSWORD_DEFAULT);
+
+        $needsRehash = password_needs_rehash(
+            $passwordHash, 
+            PASSWORD_DEFAULT, 
+            $this->getOptions()
+        );
 
         if ($isValid === true) {
             $this->resultInfo['code'] = ValidationResult::SUCCESS;

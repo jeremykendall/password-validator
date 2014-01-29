@@ -55,6 +55,23 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(password_verify('password', $result->getPassword()));
     }
 
+    public function testCostNineHashValidAndNotRehashedBecauseOptions()
+    {
+        $options = array('cost' => 9);
+        $passwordHash = password_hash('password', PASSWORD_DEFAULT, $options);
+        $this->assertStringStartsWith('$2y$09$', $passwordHash);
+
+        $this->validator->setOptions($options);
+        $result = $this->validator->isValid('password', $passwordHash);
+
+        $this->assertTrue($result->isValid());
+        $this->assertEquals(
+            ValidationResult::SUCCESS, 
+            $result->getCode()
+        );
+        $this->assertNull($result->getPassword());
+    }
+
     public function testPasswordIsInvalid()
     {
         $passwordHash = password_hash('passwordz', PASSWORD_DEFAULT);
