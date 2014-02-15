@@ -29,7 +29,7 @@
     "require": {
         "php": ">=5.3.7",
         "ircmaxell/password-compat": "1.*",
-        "wp-cli/php-cli-tools": "v0.9.4"
+        "wp-cli/php-cli-tools": "~0.9.4"
     },
     "require-dev": {
         "league/phpunit-coverage-listener": "~1.1",
