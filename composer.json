@@ -33,7 +33,7 @@
     },
     "require-dev": {
         "league/phpunit-coverage-listener": "~1.1",
-        "phpunit/phpunit": "3.*"
+        "phpunit/phpunit": "4.*"
     },
     "autoload": {
         "psr-0": {
