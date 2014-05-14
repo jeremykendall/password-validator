@@ -14,26 +14,22 @@ use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
 
 /**
- * This test validates the upgrade scenario proposed in Daniel Karp's blog
- * post "Rehashing Password Hashes". If the existing persisted password
- * hash, hashed using the legacy technique, is rehashed with password_hash,
- * then the UpgradeDecorator can still be used to validate the rehashed
- * legacy hash and perform a final hash upgrade using the user's plain text
- * password on the user's next login.
+ * This test validates the upgrade scenario outlined in Daniel Karp's blog post
+ * {@link http://bit.ly/T0gwRN "Rehashing Password Hashes"}.
  *
- * In order to accomplish this scenario, the $validationCallback should be
- * written to test the hashed plain text password against the upgraded,
- * persisted hash.
- *
- * @link http://karptonite.com/2014/05/11/rehashing-password-hashes/ Rehashing Password Hashes
+ * In order to properly validate this scenario, the $validationCallback should
+ * be written to use {@link http://php.net/password_verify password_verify} to
+ * test the plain text password's legacy hash against the upgraded, persisted
+ * hash.
  */
 class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 {
     private $decorator;
-
     private $decoratedValidator;
-
     private $validationCallback;
+    private $plainTextPassword;
+    private $legacySalt;
+    private $upgradedLegacyHash;
 
     protected function setUp()
     {
@@ -61,24 +57,25 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             $this->decoratedValidator,
             $this->validationCallback
         );
+
+        $this->plainTextPassword = 'password';
+        $this->legacySalt = mt_rand(1000, 1000000);
+
+        $legacyHash = hash('sha512', $this->plainTextPassword . $this->legacySalt);
+        $this->upgradedLegacyHash = password_hash($legacyHash, PASSWORD_DEFAULT);
     }
 
     public function testRehashingPasswordHashesScenarioCredentialIsValid()
     {
-        $plainTextPassword = 'password';
-        $salt = mt_rand(1000, 1000000);
-
-        $legacyHash = hash('sha512', $plainTextPassword . $salt);
-        $upgradedLegacyHash = password_hash($legacyHash, PASSWORD_DEFAULT);
         $upgradeValidatorRehash = password_hash(
-            $plainTextPassword,
+            $this->plainTextPassword,
             PASSWORD_DEFAULT,
             array(
                 'cost' => 4,
                 'salt' => 'CostAndSaltForceRehash',
             )
         );
-        $finalValidatorRehash = password_hash($plainTextPassword, PASSWORD_DEFAULT);
+        $finalValidatorRehash = password_hash($this->plainTextPassword, PASSWORD_DEFAULT);
 
         $validResult = new ValidationResult(
             ValidationResult::SUCCESS_PASSWORD_REHASHED,
@@ -87,13 +84,13 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($plainTextPassword, $upgradeValidatorRehash, $salt)
+            ->with($this->plainTextPassword, $upgradeValidatorRehash, $this->legacySalt)
             ->will($this->returnValue($validResult));
 
         $result = $this->decorator->isValid(
-            $plainTextPassword,
-            $upgradedLegacyHash,
-            $salt
+            $this->plainTextPassword,
+            $this->upgradedLegacyHash,
+            $this->legacySalt
         );
 
         $this->assertTrue($result->isValid());
@@ -104,18 +101,13 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         // Final rehashed password is a valid hash
         $this->assertTrue(
-            password_verify($plainTextPassword, $result->getPassword())
+            password_verify($this->plainTextPassword, $result->getPassword())
         );
     }
 
     public function testRehashingPasswordHashesScenarioCredentialIsNotValid()
     {
-        $plainTextPassword = 'password';
         $wrongPlainTextPassword = 'i-forgot-my-password';
-        $salt = mt_rand(1000, 1000000);
-
-        $legacyHash = hash('sha512', $plainTextPassword . $salt);
-        $upgradedLegacyHash = password_hash($legacyHash, PASSWORD_DEFAULT);
 
         $invalidResult = new ValidationResult(
             ValidationResult::FAILURE_PASSWORD_INVALID
@@ -126,13 +118,13 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($wrongPlainTextPassword, $upgradedLegacyHash, $salt)
+            ->with($wrongPlainTextPassword, $this->upgradedLegacyHash, $this->legacySalt)
             ->will($this->returnValue($invalidResult));
 
         $result = $this->decorator->isValid(
             $wrongPlainTextPassword,
-            $upgradedLegacyHash,
-            $salt
+            $this->upgradedLegacyHash,
+            $this->legacySalt
         );
 
         $this->assertFalse($result->isValid());
