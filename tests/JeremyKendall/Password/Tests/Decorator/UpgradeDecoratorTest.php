@@ -35,6 +35,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->decoratedValidator = $this->getMockBuilder('JeremyKendall\Password\PasswordValidatorInterface')
             ->disableOriginalConstructor()
             ->getMock();
+
         $this->decorator = new UpgradeDecorator(
             $this->decoratedValidator,
             $this->validationCallback
@@ -141,5 +142,75 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $this->decorator->getOptions());
         $this->decorator->setOptions(array('cost' => '11'));
         $this->assertEquals(array('cost' => '11'), $this->decorator->getOptions());
+    }
+
+    /**
+     * This test validates the upgrade scenario proposed in Daniel Karp's blog 
+     * post "Rehashing Password Hashes". If the existing persisted password 
+     * hash, hashed using the legacy technique, is rehashed with password_hash, 
+     * then the UpgradeDecorator can still be used to validate the rehashed 
+     * legacy hash and perform a final hash upgrade using the user's plain text 
+     * password on the user's next login. 
+     *
+     * In order to accomplish this scenario, the $validationCallback should be 
+     * written to test the hashed plain text password (hashed with the legacy 
+     * technique and then rehashed with password_validator) against the 
+     * upgraded, persisted hash.
+     *
+     * @link http://karptonite.com/2014/05/11/rehashing-password-hashes/ Rehashing Password Hashes
+     */
+    public function testRehashingPasswordHashesScenario()
+    {
+        $validationCallback = function ($credential, $passwordHash) {
+            $legacyHash = hash('sha512', $credential);
+            $upgradedLegacyHash = password_hash($legacyHash, PASSWORD_DEFAULT);
+
+            if (password_verify($legacyHash, $upgradedLegacyHash)) {
+                return true;
+            }
+
+            return false;
+        };
+
+        $validator = new UpgradeDecorator(
+            $this->decoratedValidator,
+            $validationCallback
+        );
+
+        $plainTextPassword = 'password';
+        $legacyHash = hash('sha512', $plainTextPassword);
+        $upgradedLegacyHash = password_hash($legacyHash, PASSWORD_DEFAULT);
+        $upgradeValidatorRehash = password_hash(
+            $plainTextPassword, 
+            PASSWORD_DEFAULT, 
+            array(
+                'cost' => 4,
+                'salt' => 'CostAndSaltForceRehash',
+            )
+        );
+        $finalValidatorRehash = password_hash($plainTextPassword, PASSWORD_DEFAULT);
+
+        $result = new ValidationResult(
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
+            $finalValidatorRehash
+        );
+
+        $this->decoratedValidator->expects($this->once())
+            ->method('isValid')
+            ->with($plainTextPassword, $upgradeValidatorRehash)
+            ->will($this->returnValue($result));
+
+        $result = $validator->isValid($plainTextPassword, $upgradedLegacyHash);
+
+        $this->assertTrue($result->isValid());
+        $this->assertEquals(
+            ValidationResult::SUCCESS_PASSWORD_REHASHED, 
+            $result->getCode()
+        );
+
+        // Final rehashed password is a valid hash
+        $this->assertTrue(
+            password_verify($plainTextPassword, $result->getPassword())
+        );
     }
 }

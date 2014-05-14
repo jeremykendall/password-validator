@@ -38,12 +38,13 @@ class UpgradeDecorator extends AbstractDecorator
     /**
      * {@inheritDoc}
      */
-    public function isValid($password, $passwordHash, $identity = null)
+    public function isValid($password, $passwordHash, $legacySalt = null, $identity = null)
     {
         $isValid = call_user_func(
             $this->validationCallback,
             $password,
-            $passwordHash
+            $passwordHash,
+            $legacySalt
         );
 
         if ($isValid === true) {
@@ -53,6 +54,6 @@ class UpgradeDecorator extends AbstractDecorator
             ));
         }
 
-        return $this->validator->isValid($password, $passwordHash, $identity);
+        return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
     }
 }
