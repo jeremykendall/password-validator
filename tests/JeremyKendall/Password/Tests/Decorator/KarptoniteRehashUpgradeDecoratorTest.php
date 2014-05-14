@@ -133,4 +133,27 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             $result->getCode()
         );
     }
+
+    /**
+     * @dataProvider callbackDataProvider
+     */
+    public function testVerifyValidationCallback($password, $result)
+    {
+        $isValid = call_user_func(
+            $this->validationCallback,
+            $password,
+            $this->upgradedLegacyHash,
+            $this->legacySalt
+        );
+
+        $this->assertEquals($result, $isValid);
+    }
+
+    public function callbackDataProvider()
+    {
+        return array(
+            array('password', true),
+            array('wrong-password', false),
+        );
+    }
 }
