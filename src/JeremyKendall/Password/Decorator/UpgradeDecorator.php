@@ -54,6 +54,6 @@ class UpgradeDecorator extends AbstractDecorator
             ));
         }
 
-        return $this->validator->isValid($password, $passwordHash, $legacyHash = null, $identity);
+        return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
     }
 }
