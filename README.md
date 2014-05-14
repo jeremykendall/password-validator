@@ -81,10 +81,10 @@ persist the updated password hash. Otherwise, what's the point, right?
 ### Upgrading Legacy Passwords
 
 You can use the `PasswordValidator` whether or not you're currently using
-`password_hash` generated passwords. The validator will upgrade your current
-legacy hashes to the new `password_hash` generated hashes.  All you need to
-do is provide a validator callback for your password hash and then
-[decorate][6] the validator with the `UpgradeDecorator`.
+`password_hash` generated passwords. The validator will transparently upgrade
+your current legacy hashes to the new `password_hash` generated hashes as each
+user logs in.  All you need to do is provide a validator callback for your
+password hash and then [decorate][6] the validator with the `UpgradeDecorator`.
 
 ``` php
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
@@ -109,6 +109,19 @@ provided callback.  If the user's password is valid, it will be hashed with
 All password validation attempts will eventually pass through the
 `PasswordValidator`. This allows a password that has already been upgraded to
 be properly validated, even when using the `UpgradeDecorator`.
+
+#### Alternate Upgrade Technique
+
+Rather than upgrading each user's password as they log in, it's possible to
+preemptively rehash persisted legacy hashes all at once. `PasswordValidator`
+and the `UpgradeDecorator` can then be used to validate passwords against the
+rehashed legacy hashes, at which point the user's plain text password will be
+hashed with `password_hash`, completing the upgrade process.
+
+For more information on this technique, please see Daniel Karp's 
+[Rehashing Password Hashes][10] blog post, and review
+[`JeremyKendall\Password\Tests\Decorator\KarptoniteRehashUpgradeDecoratorTest`][11]
+to see a sample implementation. 
 
 ### Persisting Rehashed Passwords
 
@@ -265,3 +278,5 @@ submitting pull requests.
 [7]: http://csiphp.com/blog/2012/02/16/encrypt-passwords-for-highest-level-of-security/
 [8]: http://php.net/password_hash#example-875
 [9]: http://jeremykendall.net/2014/01/04/php-password-hashing-a-dead-simple-implementation/
+[10]: http://karptonite.com/2014/05/11/rehashing-password-hashes/
+[11]: tests/JeremyKendall/Password/Tests/Decorator/KarptoniteRehashUpgradeDecoratorTest.php
