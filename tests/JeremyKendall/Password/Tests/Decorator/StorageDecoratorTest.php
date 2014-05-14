@@ -49,10 +49,10 @@ class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with('password', 'passwordHash', 'username')
+            ->with('password', 'passwordHash', null, 'username')
             ->will($this->returnValue($valid));
 
-        $result = $this->decorator->isValid('password', 'passwordHash', 'username');
+        $result = $this->decorator->isValid('password', 'passwordHash', null, 'username');
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(

@@ -54,7 +54,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
             ->method('updatePassword')
             ->with($identity, $this->stringContains('$2y$10$'));
 
-        $result = $validator->isValid($password, $hash, $identity);
+        $result = $validator->isValid($password, $hash, null, $identity);
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
@@ -82,7 +82,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
             ->method('updatePassword')
             ->with($identity, $this->stringContains('$2y$10$'));
 
-        $result = $validator->isValid($password, $hash, $identity);
+        $result = $validator->isValid($password, $hash, null, $identity);
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
