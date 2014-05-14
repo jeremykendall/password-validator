@@ -90,8 +90,8 @@ do is provide a validator callback for your password hash and then
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 
 // Example callback to validate a sha512 hashed password
-$callback = function ($password, $passwordHash) {
-    if (hash('sha512', $password) === $passwordHash) {
+$callback = function ($password, $passwordHash, $salt) {
+    if (hash('sha512', $password . $salt) === $passwordHash) {
         return true;
     }
 
@@ -99,6 +99,7 @@ $callback = function ($password, $passwordHash) {
 };
 
 $validator = new UpgradeDecorator(new PasswordValidator(), $callback);
+$result = $validator->isValid('password', 'password-hash', 'legacy-salt');
 ```
 
 The `UpgradeDecorator` will validate a user's current password using the
@@ -170,10 +171,10 @@ $storage = new UserDao($db);
 $validator = new StorageDecorator(new PasswordValidator(), $storage);
 
 // If validation results in a rehash, the new password hash will be persisted
-$result = $validator->isValid('password', 'passwordHash', 'username');
+$result = $validator->isValid('password', 'passwordHash', null, 'username');
 ```
 
-**IMPORTANT**: You must pass the optional third argument (`$identity`) to
+**IMPORTANT**: You must pass the optional fourth argument (`$identity`) to
 `isValid()` when calling `StorageDecorator::isValid()`.  If you do not do so,
 the `StorageDecorator` will throw an `IdentityMissingException`.
 
