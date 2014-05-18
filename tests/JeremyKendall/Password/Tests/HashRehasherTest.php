@@ -26,11 +26,6 @@ class HashRehasherTest extends \PHPUnit_Framework_TestCase
         $this->rehasher = new HashRehasher( $this->storage );
     }
 
-    public function testCanCallRehashHash()
-    {
-        $this->rehasher->rehashHash( self::IDENTITY, self::LEGACYHASH, self::SALT );
-    }
-
     /**
      * @expectedException JeremyKendall\Password\Storage\IdentityMissingException
      */
