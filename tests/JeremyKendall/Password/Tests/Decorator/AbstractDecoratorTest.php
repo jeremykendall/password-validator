@@ -32,15 +32,24 @@ class AbstractDecoratorTest extends \PHPUnit_Framework_TestCase
             ->getMockForAbstractClass();
     }
 
-    public function testIsValid()
+    public function testIsValidWithoutOptionalArgs()
     {
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with('password', 'passwordHash', null);
+            ->with('password', 'passwordHash', null, null);
 
         $this->decorator->isValid('password', 'passwordHash');
     }
 
+    public function testIsValidWithOptionalArgs()
+    {
+        $this->decoratedValidator->expects($this->once())
+            ->method('isValid')
+            ->with('password', 'passwordHash', 'legacySalt', 'identity');
+
+        $this->decorator->isValid('password', 'passwordHash', 'legacySalt', 'identity');
+    }
+    
     public function testRehash()
     {
         $this->decoratedValidator->expects($this->once())
