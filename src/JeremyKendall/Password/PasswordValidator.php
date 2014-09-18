@@ -31,7 +31,7 @@ class PasswordValidator implements PasswordValidatorInterface
     /**
      * {@inheritDoc}
      */
-    public function isValid($password, $passwordHash, $legacyHash = null, $identity = null)
+    public function isValid($password, $passwordHash, $legacySalt = null, $identity = null)
     {
         $this->resultInfo = array(
             'code' => ValidationResult::FAILURE_PASSWORD_INVALID,

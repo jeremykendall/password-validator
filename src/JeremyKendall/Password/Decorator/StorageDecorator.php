@@ -44,9 +44,9 @@ class StorageDecorator extends AbstractDecorator
      * {@inheritDoc}
      * @throws IdentityMissingException If $identity isn't provided
      */
-    public function isValid($password, $passwordHash, $legacyHash = null, $identity = null)
+    public function isValid($password, $passwordHash, $legacySalt = null, $identity = null)
     {
-        $result = $this->validator->isValid($password, $passwordHash, $legacyHash, $identity);
+        $result = $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
         $rehashed = ($result->getCode() === ValidationResult::SUCCESS_PASSWORD_REHASHED);
 
         if ($rehashed && $identity === null) {
