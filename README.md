@@ -165,7 +165,7 @@ class UserDao implements StorageInterface
     {
         $sql = 'UPDATE users SET password = :password WHERE username = :identity';
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(array('password' => $password, 'username' => $identity));
+        $stmt->execute(array('password' => $password, 'identity' => $identity));
     }
 }
 ```
