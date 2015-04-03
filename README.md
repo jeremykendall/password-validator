@@ -45,12 +45,11 @@ if ($result->isValid()) {
 ```
 
 If your application requires options other than the `password_hash` defaults,
-you can set both the `salt` and `cost` options with `PasswordValidator::setOptions()`.
+you can set the `cost` option with `PasswordValidator::setOptions()`.
 
 ``` php
 $options = array(
-    'salt' => 'SettingYourOwnSaltIsNotTheBestIdea',
-    'cost' => 11,
+    'cost' => 11
 );
 $validator->setOptions($options);
 ```
