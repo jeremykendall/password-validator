@@ -193,9 +193,9 @@ the `StorageDecorator` will throw an `IdentityMissingException`.
 #### Combining Storage Decorator with Upgrade Decorator
 
 It is possible to chain decorators together thanks to the 
-[Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern). A great way to use this is to combine the Storage
-and Upgrade Decorators together to first update a legacy hash and then save it. Doing so is very simple - you just
-need to pass an instance of the Storage Decorator as a constructor argument to Upgrade Decorator:
+[Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern). A great way to use this is to combine the 
+`StorageDecorator` and `UpgradeDecorator` together to first update a legacy hash and then save it. Doing so is very 
+simple - you just need to pass an instance of the `StorageDecorator` as a constructor argument to `UpgradeDecorator`:
 
 ``` php
 use Example\UserDao;
