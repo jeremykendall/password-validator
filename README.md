@@ -190,6 +190,36 @@ $result = $validator->isValid('password', 'passwordHash', null, 'username');
 `isValid()` when calling `StorageDecorator::isValid()`.  If you do not do so,
 the `StorageDecorator` will throw an `IdentityMissingException`.
 
+#### Combining Storage Decorator with Upgrade Decorator
+
+It is possible to chain decorators together thanks to the 
+[Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern). A great way to use this is to combine the Storage
+and Upgrade Decorators together to first update a legacy hash and then persist it. Doing so is very simple - you just
+need to pass an instance of the Storage Decorator as a constructor argument to Upgrade Decorator:
+
+``` php
+use Example\UserDao;
+use JeremyKendall\Password\Decorator\StorageDecorator;
+use JeremyKendall\Password\Decorator\UpgradeDecorator;
+
+// Example callback to validate a sha512 hashed password
+$callback = function ($password, $passwordHash, $salt) {
+    if (hash('sha512', $password . $salt) === $passwordHash) {
+        return true;
+    }
+
+    return false;
+};
+
+$storage = new UserDao($db);
+$storageDecorator = new StorageDecorator(new PasswordValidator(), $storage);
+$validator = new UpgradeDecorator($storageDecorator, $callback);
+
+// If validation results in a rehash, the new password hash will be persisted
+$result = $validator->isValid('password', 'passwordHash', null, 'username');
+```
+
+
 ### Validation Results
 
 Each validation attempt returns a `JeremyKendall\Password\Result` object. The
