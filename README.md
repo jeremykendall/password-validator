@@ -194,7 +194,7 @@ the `StorageDecorator` will throw an `IdentityMissingException`.
 
 It is possible to chain decorators together thanks to the 
 [Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern). A great way to use this is to combine the Storage
-and Upgrade Decorators together to first update a legacy hash and then persist it. Doing so is very simple - you just
+and Upgrade Decorators together to first update a legacy hash and then save it. Doing so is very simple - you just
 need to pass an instance of the Storage Decorator as a constructor argument to Upgrade Decorator:
 
 ``` php
