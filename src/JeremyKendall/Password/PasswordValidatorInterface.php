@@ -22,7 +22,7 @@ interface PasswordValidatorInterface
      * @param  string          $passwordHash User's current hashed password
      * @param  string          $legacySalt   OPTIONAL salt used in legacy password hashing
      * @param  string          $identity     OPTIONAL unique user identifier
-     * @return Password\Result
+     * @return Result
      */
     public function isValid($password, $passwordHash, $legacySalt = null, $identity = null);
 
@@ -31,7 +31,7 @@ interface PasswordValidatorInterface
      *
      * @param  string                                $password Plain text password
      * @return string                                Hashed password
-     * @throws Password\PasswordHashFailureException If password_hash returns false
+     * @throws PasswordHashFailureException If password_hash returns false
      */
     public function rehash($password);
 
