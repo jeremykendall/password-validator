@@ -101,7 +101,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 		$password = 'password';
 		$hash = hash('sha512', $password);
 
-		$validator->setOptions(['cost' => 4]);
+		$validator->setOptions(array('cost' => 4));
 
 		$result = $validator->isValid($password, $hash);
 
