@@ -103,9 +103,20 @@ class PasswordValidator implements PasswordValidatorInterface
         $this->options = $options;
     }
 
+	/**
+	 * @param bool $forceRehash
+	 */
 	public function setForceRehash($forceRehash)
 	{
-		$this->forceRehash = $forceRehash;
+		$this->forceRehash = (bool)$forceRehash;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getForceRehash()
+	{
+		return $this->forceRehash;
 	}
 
 	/**
@@ -117,6 +128,6 @@ class PasswordValidator implements PasswordValidatorInterface
 		if (password_needs_rehash($passwordHash, PASSWORD_DEFAULT, $this->getOptions())) {
 			return true;
 		}
-		return $this->forceRehash;
+		return $this->getForceRehash();
 	}
 }
