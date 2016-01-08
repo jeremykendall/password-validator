@@ -84,12 +84,12 @@ class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
         $result = $this->decorator->isValid('password', 'passwordHash');
     }
 
-	public function testSetForceRehash()
-	{
-		$this->decoratedValidator->expects($this->once())
-			->method("setForceRehash")
-			->with(true);
+    public function testSetForceRehash()
+    {
+        $this->decoratedValidator->expects($this->once())
+            ->method("setForceRehash")
+            ->with(true);
 
-		$this->decorator->setForceRehash(true);
-	}
+        $this->decorator->setForceRehash(true);
+    }
 }

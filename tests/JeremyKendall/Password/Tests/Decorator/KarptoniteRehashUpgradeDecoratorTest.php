@@ -93,7 +93,7 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         // Final rehashed password is a valid hash
         $this->assertFalse(
-			password_needs_rehash($result->getPassword(), PASSWORD_DEFAULT)
+            password_needs_rehash($result->getPassword(), PASSWORD_DEFAULT)
         );
     }
 

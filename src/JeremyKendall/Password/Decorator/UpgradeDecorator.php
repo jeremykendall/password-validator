@@ -51,7 +51,7 @@ class UpgradeDecorator extends AbstractDecorator
             $passwordHash = password_hash($password, PASSWORD_DEFAULT, array(
                 'cost' => 4,
             ));
-			$this->setForceRehash(true);
+            $this->setForceRehash(true);
         }
 
         return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);

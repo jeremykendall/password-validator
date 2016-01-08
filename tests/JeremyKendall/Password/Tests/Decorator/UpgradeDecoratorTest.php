@@ -140,12 +140,12 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('cost' => '11'), $this->decorator->getOptions());
     }
 
-	public function testSetForceRehash()
-	{
-		$this->decoratedValidator->expects($this->once())
-			->method("setForceRehash")
-			->with(true);
+    public function testSetForceRehash()
+    {
+        $this->decoratedValidator->expects($this->once())
+            ->method("setForceRehash")
+            ->with(true);
 
-		$this->decorator->setForceRehash(true);
-	}
+        $this->decorator->setForceRehash(true);
+    }
 }

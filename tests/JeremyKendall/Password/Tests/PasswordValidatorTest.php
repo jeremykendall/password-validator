@@ -93,10 +93,10 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('cost' => '11'), $this->validator->getOptions());
     }
 
-	public function testGetSetForceRehash()
-	{
-		$this->assertFalse($this->validator->getForceRehash());
-		$this->validator->setForceRehash(true);
-		$this->assertTrue($this->validator->getForceRehash());
-	}
+    public function testGetSetForceRehash()
+    {
+        $this->assertFalse($this->validator->getForceRehash());
+        $this->validator->setForceRehash(true);
+        $this->assertTrue($this->validator->getForceRehash());
+    }
 }
