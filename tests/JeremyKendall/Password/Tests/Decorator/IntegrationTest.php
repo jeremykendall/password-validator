@@ -91,4 +91,24 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertStringStartsWith('$2y$10$', $result->getPassword());
     }
+
+	public function testLegacyPasswordIsValidUpgradedRehashedWhenClientCodeUsesSameParametersAsUpgradeDecorator()
+	{
+		$validator = new UpgradeDecorator(
+			new PasswordValidator(),
+			$this->callback
+		);
+		$password = 'password';
+		$hash = hash('sha512', $password);
+
+		$validator->setOptions(['cost' => 4]);
+
+		$result = $validator->isValid($password, $hash);
+
+		$this->assertTrue($result->isValid());
+		$this->assertEquals(
+			ValidationResult::SUCCESS_PASSWORD_REHASHED,
+			$result->getCode()
+		);
+	}
 }
