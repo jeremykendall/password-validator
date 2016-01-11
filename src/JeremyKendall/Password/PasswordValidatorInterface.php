@@ -52,4 +52,12 @@ interface PasswordValidatorInterface
      * @return array password_hash options
      */
     public function getOptions();
+
+    /**
+     * Tell PasswordValidator to force a rehash
+     * Example: used by UpgradeDecorator to ensure that the rehashed legacy hash is correctly re-hashed
+     *
+     * @param bool $forceRehash
+     */
+    public function setForceRehash($forceRehash);
 }

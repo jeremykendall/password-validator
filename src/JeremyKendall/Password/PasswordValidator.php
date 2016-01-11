@@ -29,6 +29,11 @@ class PasswordValidator implements PasswordValidatorInterface
     protected $resultInfo = array();
 
     /**
+     * @var bool Whether or not to force a rehash
+     */
+    protected $forceRehash = false;
+
+    /**
      * {@inheritDoc}
      */
     public function isValid($password, $passwordHash, $legacySalt = null, $identity = null)
@@ -40,11 +45,7 @@ class PasswordValidator implements PasswordValidatorInterface
 
         $isValid = password_verify($password, $passwordHash);
 
-        $needsRehash = password_needs_rehash(
-            $passwordHash, 
-            PASSWORD_DEFAULT, 
-            $this->getOptions()
-        );
+        $needsRehash = $this->passwordNeedsRehash($passwordHash);
 
         if ($isValid === true) {
             $this->resultInfo['code'] = ValidationResult::SUCCESS;
@@ -100,5 +101,33 @@ class PasswordValidator implements PasswordValidatorInterface
     public function setOptions(array $options)
     {
         $this->options = $options;
+    }
+
+    /**
+     * @param bool $forceRehash
+     */
+    public function setForceRehash($forceRehash)
+    {
+        $this->forceRehash = (bool)$forceRehash;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getForceRehash()
+    {
+        return $this->forceRehash;
+    }
+
+    /**
+     * @param $passwordHash
+     * @return bool|string
+     */
+    protected function passwordNeedsRehash($passwordHash)
+    {
+        if (password_needs_rehash($passwordHash, PASSWORD_DEFAULT, $this->getOptions())) {
+            return true;
+        }
+        return $this->getForceRehash();
     }
 }

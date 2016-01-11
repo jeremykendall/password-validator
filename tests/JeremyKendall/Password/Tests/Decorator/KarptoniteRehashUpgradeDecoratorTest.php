@@ -67,14 +67,6 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function testRehashingPasswordHashesScenarioCredentialIsValid()
     {
-        $upgradeValidatorRehash = password_hash(
-            $this->plainTextPassword,
-            PASSWORD_DEFAULT,
-            array(
-                'cost' => 4,
-                'salt' => 'CostAndSaltForceRehash',
-            )
-        );
         $finalValidatorRehash = password_hash($this->plainTextPassword, PASSWORD_DEFAULT);
 
         $validResult = new ValidationResult(
@@ -84,7 +76,7 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($this->plainTextPassword, $upgradeValidatorRehash, $this->legacySalt)
+            ->with($this->plainTextPassword, $this->isType('string'), $this->legacySalt)
             ->will($this->returnValue($validResult));
 
         $result = $this->decorator->isValid(
@@ -100,8 +92,8 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
         );
 
         // Final rehashed password is a valid hash
-        $this->assertTrue(
-            password_verify($this->plainTextPassword, $result->getPassword())
+        $this->assertFalse(
+            password_needs_rehash($result->getPassword(), PASSWORD_DEFAULT)
         );
     }
 

@@ -46,10 +46,6 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $passwordHash = hash('sha512', $password);
-        $upgradeRehash = password_hash($password, PASSWORD_DEFAULT, array(
-            'cost' => 4,
-            'salt' => 'CostAndSaltForceRehash',
-        ));
 
         $validatorRehash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -60,7 +56,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($password, $upgradeRehash)
+            ->with($password, $this->isType('string'))
             ->will($this->returnValue($result));
 
         $result = $this->decorator->isValid($password, $passwordHash);
@@ -71,7 +67,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             $result->getCode()
         );
         // Rehashed password is a valid hash
-        $this->assertTrue(password_verify($password, $result->getPassword()));
+        $this->assertFalse(password_needs_rehash($result->getPassword(), PASSWORD_DEFAULT));
     }
 
     public function testLegacyPasswordInvalidDecoratedValidatorTakesOver()
@@ -142,5 +138,14 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $this->decorator->getOptions());
         $this->decorator->setOptions(array('cost' => '11'));
         $this->assertEquals(array('cost' => '11'), $this->decorator->getOptions());
+    }
+
+    public function testSetForceRehash()
+    {
+        $this->decoratedValidator->expects($this->once())
+            ->method("setForceRehash")
+            ->with(true);
+
+        $this->decorator->setForceRehash(true);
     }
 }

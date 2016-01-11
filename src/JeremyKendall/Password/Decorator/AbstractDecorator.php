@@ -63,4 +63,12 @@ abstract class AbstractDecorator implements PasswordValidatorInterface
     {
         $this->validator->setOptions($options);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setForceRehash($forceRehash)
+    {
+        $this->validator->setForceRehash($forceRehash);
+    }
 }
