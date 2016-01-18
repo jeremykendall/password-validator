@@ -56,11 +56,11 @@ class UpgradeDecorator extends AbstractDecorator
 
     /**
      * This method returns an upgraded password, one that is hashed by the
-     * password_hash method, in such a way that it forces the PasswordValidator
+     * password_hash method in such a way that it forces the PasswordValidator
      * to rehash the password. This results in PasswordValidator::isValid()
      * returning a Result::$code of Result::SUCCESS_PASSWORD_REHASHED,
      * notifying the StorageDecorator or custom application code that the
-     * Result::$password must be persisted.
+     * returned password hash should be persisted.
      *
      * @param string $password Password to upgrade
      *
