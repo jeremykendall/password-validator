@@ -91,4 +91,31 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertStringStartsWith('$2y$10$', $result->getPassword());
     }
+
+    /**
+     * The UpgradeDecorator hashes valid legacy passwords with a cost of 4 in 
+     * order to force a rehash. Without the salt option to password_hash, 
+     * removed for PHP 7.0 compatibility, the password will NOT be rehashed if 
+     * the user provides a cost of 4 to 
+     * PasswordValidatorInterface::setOptions().
+     *
+     * Adding this test before refactoring to avoid regressions.
+     */
+    public function testLegacyPasswordIsUpgradedEvenWhenUserProvidedCostIsFour()
+    {
+        $validator = new UpgradeDecorator(new PasswordValidator(), $this->callback);
+        $validator->setOptions(array('cost' => 4));
+        $password = 'password';
+        $hash = hash('sha512', $password);
+
+        $result = $validator->isValid($password, $hash);
+
+        $this->assertTrue($result->isValid());
+        $this->assertEquals(
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
+            $result->getCode(),
+            'Failed asserting that Result::getCode() returns expected Result::SUCCESS_PASSWORD_REHASHED.'
+        );
+        $this->assertStringStartsWith('$2y$04', $result->getPassword());
+    }
 }

@@ -12,9 +12,12 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
+use JeremyKendall\Password\Tests\BlowfishCallbackConstraintTrait;
 
 class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 {
+    use BlowfishCallbackConstraintTrait;
+
     private $decorator;
 
     private $decoratedValidator;
@@ -31,7 +34,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
             return false;
         };
- 
+
         $this->decoratedValidator = $this->getMockBuilder('JeremyKendall\Password\PasswordValidatorInterface')
             ->disableOriginalConstructor()
             ->getMock();
@@ -46,11 +49,6 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $passwordHash = hash('sha512', $password);
-        $upgradeRehash = password_hash($password, PASSWORD_DEFAULT, array(
-            'cost' => 4,
-            'salt' => 'CostAndSaltForceRehash',
-        ));
-
         $validatorRehash = password_hash($password, PASSWORD_DEFAULT);
 
         $result = new ValidationResult(
@@ -60,14 +58,14 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($password, $upgradeRehash)
+            ->with($password, $this->callback($this->getBlowfishCallback('04')))
             ->will($this->returnValue($result));
 
         $result = $this->decorator->isValid($password, $passwordHash);
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS_PASSWORD_REHASHED, 
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
             $result->getCode()
         );
         // Rehashed password is a valid hash

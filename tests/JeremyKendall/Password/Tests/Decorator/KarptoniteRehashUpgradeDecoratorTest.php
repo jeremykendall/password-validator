@@ -12,6 +12,7 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
+use JeremyKendall\Password\Tests\BlowfishCallbackConstraintTrait;
 
 /**
  * This test validates the upgrade scenario outlined in Daniel Karp's blog post
@@ -24,6 +25,8 @@ use JeremyKendall\Password\Result as ValidationResult;
  */
 class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 {
+    use BlowfishCallbackConstraintTrait;
+
     private $decorator;
     private $decoratedValidator;
     private $validationCallback;
@@ -67,14 +70,6 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function testRehashingPasswordHashesScenarioCredentialIsValid()
     {
-        $upgradeValidatorRehash = password_hash(
-            $this->plainTextPassword,
-            PASSWORD_DEFAULT,
-            array(
-                'cost' => 4,
-                'salt' => 'CostAndSaltForceRehash',
-            )
-        );
         $finalValidatorRehash = password_hash($this->plainTextPassword, PASSWORD_DEFAULT);
 
         $validResult = new ValidationResult(
@@ -84,7 +79,11 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($this->plainTextPassword, $upgradeValidatorRehash, $this->legacySalt)
+            ->with(
+                $this->plainTextPassword,
+                $this->callback($this->getBlowfishCallback('04')),
+                $this->legacySalt
+            )
             ->will($this->returnValue($validResult));
 
         $result = $this->decorator->isValid(

@@ -48,12 +48,21 @@ class UpgradeDecorator extends AbstractDecorator
         );
 
         if ($isValid === true) {
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT, array(
-                'cost' => 4,
-                'salt' => 'CostAndSaltForceRehash',
-            ));
+            $passwordHash = $this->createHashWhichWillForceRehashInValidator($password);
         }
 
         return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
+    }
+
+    private function createHashWhichWillForceRehashInValidator($password)
+    {
+        $cost = 4;
+        $options = $this->getOptions();
+
+        if (isset($options['cost']) && (int) $options['cost'] === 4) {
+            $cost = 5;
+        }
+
+        return password_hash($password, PASSWORD_DEFAULT, array('cost' => $cost));
     }
 }
