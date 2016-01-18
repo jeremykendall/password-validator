@@ -12,7 +12,6 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
-use JeremyKendall\Password\Tests\BlowfishCallbackConstraintTrait;
 
 /**
  * This test validates the upgrade scenario outlined in Daniel Karp's blog post
@@ -25,8 +24,6 @@ use JeremyKendall\Password\Tests\BlowfishCallbackConstraintTrait;
  */
 class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 {
-    use BlowfishCallbackConstraintTrait;
-
     private $decorator;
     private $decoratedValidator;
     private $validationCallback;
@@ -77,11 +74,15 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             $finalValidatorRehash
         );
 
+        $isBlowfishCostFour = function ($subject) {
+            return preg_match('/^\$2y\$04\$.{53}$/', $subject) === 1;
+        };
+
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
             ->with(
                 $this->plainTextPassword,
-                $this->callback($this->getBlowfishCallback('04')),
+                $this->callback($isBlowfishCostFour),
                 $this->legacySalt
             )
             ->will($this->returnValue($validResult));

@@ -12,16 +12,11 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
-use JeremyKendall\Password\Tests\BlowfishCallbackConstraintTrait;
 
 class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 {
-    use BlowfishCallbackConstraintTrait;
-
     private $decorator;
-
     private $decoratedValidator;
-
     private $validationCallback;
 
     protected function setUp()
@@ -56,9 +51,13 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             $validatorRehash
         );
 
+        $isBlowfishCostFour = function ($subject) {
+            return preg_match('/^\$2y\$04\$.{53}$/', $subject) === 1;
+        };
+
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($password, $this->callback($this->getBlowfishCallback('04')))
+            ->with($password, $this->callback($isBlowfishCostFour))
             ->will($this->returnValue($result));
 
         $result = $this->decorator->isValid($password, $passwordHash);
