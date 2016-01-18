@@ -54,6 +54,18 @@ class UpgradeDecorator extends AbstractDecorator
         return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
     }
 
+    /**
+     * This method returns an upgraded password, one that is hashed by the
+     * password_hash method, in such a way that it forces the PasswordValidator
+     * to rehash the password. This results in PasswordValidator::isValid()
+     * returning a Result::$code of Result::SUCCESS_PASSWORD_REHASHED,
+     * notifying the StorageDecorator or custom application code that the
+     * Result::$password must be persisted.
+     *
+     * @param string $password Password to upgrade
+     *
+     * @return string Hashed password
+     */
     private function createHashWhichWillForceRehashInValidator($password)
     {
         $cost = 4;
