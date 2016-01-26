@@ -46,10 +46,6 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $passwordHash = hash('sha512', $password);
-        $upgradeRehash = password_hash($password, PASSWORD_DEFAULT, array(
-            'cost' => 4,
-            'salt' => 'CostAndSaltForceRehash',
-        ));
 
         $validatorRehash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -60,7 +56,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decoratedValidator->expects($this->once())
             ->method('isValid')
-            ->with($password, $upgradeRehash)
+            ->with($password, $this->isType('string'))
             ->will($this->returnValue($result));
 
         $result = $this->decorator->isValid($password, $passwordHash);
