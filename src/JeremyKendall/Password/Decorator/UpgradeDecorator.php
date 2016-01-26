@@ -23,6 +23,8 @@ class UpgradeDecorator extends AbstractDecorator
      */
     protected $validationCallback;
 
+    const DEFAULT_REHASH_COST = 4;
+
     /**
      * Public constructor
      *
@@ -48,12 +50,33 @@ class UpgradeDecorator extends AbstractDecorator
         );
 
         if ($isValid === true) {
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT, array(
-                'cost' => 4,
-                'salt' => 'CostAndSaltForceRehash',
-            ));
+            $passwordHash = $this->createHashWhichWillForceRehashInValidator($password);
         }
 
         return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
+    }
+    
+    /**
+     * This method returns an upgraded password, one that is hashed by the
+     * password_hash method in such a way that it forces the PasswordValidator
+     * to rehash the password. This results in PasswordValidator::isValid()
+     * returning a Result::$code of Result::SUCCESS_PASSWORD_REHASHED,
+     * notifying the StorageDecorator or custom application code that the
+     * returned password hash should be persisted.
+     *
+     * @param string $password Password to upgrade
+     *
+     * @return string Hashed password
+     */
+    private function createHashWhichWillForceRehashInValidator($password)
+    {
+        $cost = static::DEFAULT_REHASH_COST;
+        $options = $this->getOptions();
+
+        if (isset($options['cost']) && (int) $options['cost'] === $cost) {
+            $cost++;
+        }
+
+        return password_hash($password, PASSWORD_DEFAULT, array('cost' => $cost));
     }
 }

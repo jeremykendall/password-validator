@@ -45,12 +45,11 @@ if ($result->isValid()) {
 ```
 
 If your application requires options other than the `password_hash` defaults,
-you can set both the `salt` and `cost` options with `PasswordValidator::setOptions()`.
+you can set the `cost` option with `PasswordValidator::setOptions()`.
 
 ``` php
 $options = array(
-    'salt' => 'SettingYourOwnSaltIsNotTheBestIdea',
-    'cost' => 11,
+    'cost' => 11
 );
 $validator->setOptions($options);
 ```
@@ -166,7 +165,7 @@ class UserDao implements StorageInterface
     {
         $sql = 'UPDATE users SET password = :password WHERE username = :identity';
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(array('password' => $password, 'username' => $identity));
+        $stmt->execute(array('password' => $password, 'identity' => $identity));
     }
 }
 ```
@@ -190,6 +189,36 @@ $result = $validator->isValid('password', 'passwordHash', null, 'username');
 **IMPORTANT**: You must pass the optional fourth argument (`$identity`) to
 `isValid()` when calling `StorageDecorator::isValid()`.  If you do not do so,
 the `StorageDecorator` will throw an `IdentityMissingException`.
+
+#### Combining Storage Decorator with Upgrade Decorator
+
+It is possible to chain decorators together thanks to the 
+[Decorator Pattern](https://en.wikipedia.org/wiki/Decorator_pattern). A great way to use this is to combine the 
+`StorageDecorator` and `UpgradeDecorator` together to first update a legacy hash and then save it. Doing so is very 
+simple - you just need to pass an instance of the `StorageDecorator` as a constructor argument to `UpgradeDecorator`:
+
+``` php
+use Example\UserDao;
+use JeremyKendall\Password\Decorator\StorageDecorator;
+use JeremyKendall\Password\Decorator\UpgradeDecorator;
+
+// Example callback to validate a sha512 hashed password
+$callback = function ($password, $passwordHash, $salt) {
+    if (hash('sha512', $password . $salt) === $passwordHash) {
+        return true;
+    }
+
+    return false;
+};
+
+$storage = new UserDao($db);
+$storageDecorator = new StorageDecorator(new PasswordValidator(), $storage);
+$validator = new UpgradeDecorator($storageDecorator, $callback);
+
+// If validation results in a rehash, the new password hash will be persisted
+$result = $validator->isValid('password', 'passwordHash', null, 'username');
+```
+
 
 ### Validation Results
 
