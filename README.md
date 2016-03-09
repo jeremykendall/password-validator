@@ -270,20 +270,17 @@ Appropriate 'PASSWORD_DEFAULT' Cost Found:  13
 The only officially supported method of installation is via
 [Composer](http://getcomposer.org).
 
-Create a `composer.json` file in the root of your project (always check
-Packagist for the most recent version):
-
-``` json
-{
-    "require": {
-        "jeremykendall/password-validator": "*"
-    }
-}
+Running the following command will add the latest version of the library to your project:
+``` bash
+$ composer require jeremykendall/password-validator
 ```
 
-And then run: `composer install`
+You can update to the latest version with this command:
+``` bash
+$ composer update jeremykendall/password-validator
+```
 
-Add the autoloader to your project:
+If you're not already using Composer in your project, add the autoloader to your project:
 
 ``` php
 <?php
