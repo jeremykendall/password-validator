@@ -15,18 +15,23 @@ use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Decorator\StorageDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
 use JeremyKendall\Password\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group integration
  */
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends TestCase
 {
+
+    /**
+     * @var StorageInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected $storage;
+
+    protected $callback;
 
     protected function setUp()
     {
-        parent::setUp();
-
         $this->callback = function ($credential, $passwordHash) {
             if (hash('sha512', $credential) === $passwordHash) {
                 return true;
@@ -34,16 +39,16 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
             return false;
         };
-        $this->storage = $this->getMock('JeremyKendall\Password\Storage\StorageInterface');
+        $this->storage = $this->createMock(StorageInterface::class);
     }
 
     public function testLegacyPasswordIsValidUpgradedRehashedStored()
     {
         $validator = new UpgradeDecorator(
             new StorageDecorator(
-                new PasswordValidator(), 
+                new PasswordValidator(),
                 $this->storage
-            ), 
+            ),
             $this->callback
         );
         $password = 'password';
@@ -69,9 +74,9 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
     {
         $validator = new StorageDecorator(
             new UpgradeDecorator(
-                new PasswordValidator(), 
+                new PasswordValidator(),
                 $this->callback
-            ), 
+            ),
             $this->storage
         );
         $password = 'password';

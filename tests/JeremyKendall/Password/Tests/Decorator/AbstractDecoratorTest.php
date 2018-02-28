@@ -11,23 +11,28 @@
 namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\AbstractDecorator;
+use JeremyKendall\Password\PasswordValidatorInterface;
+use PHPUnit\Framework\TestCase;
 
-class AbstractDecoratorTest extends \PHPUnit_Framework_TestCase
+class AbstractDecoratorTest extends TestCase
 {
+
+    /**
+     * @var AbstractDecorator
+     */
     private $decorator;
 
+    /**
+     * @var PasswordValidatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $decoratedValidator;
 
     protected function setUp()
     {
-        parent::setUp();
+        $this->decoratedValidator = $this->createMock(PasswordValidatorInterface::class);
 
-        $this->decoratedValidator = $this->getMockBuilder('JeremyKendall\Password\PasswordValidatorInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->decorator = 
-            $this->getMockBuilder('JeremyKendall\Password\Decorator\AbstractDecorator')
+        $this->decorator =
+            $this->getMockBuilder(AbstractDecorator::class)
             ->setConstructorArgs(array($this->decoratedValidator))
             ->getMockForAbstractClass();
     }
@@ -49,7 +54,7 @@ class AbstractDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->decorator->isValid('password', 'passwordHash', 'legacySalt', 'identity');
     }
-    
+
     public function testRehash()
     {
         $this->decoratedValidator->expects($this->once())

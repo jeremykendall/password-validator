@@ -52,4 +52,21 @@ interface PasswordValidatorInterface
      * @return array password_hash options
      */
     public function getOptions();
+
+    /**
+     * Set the algorithm for the password_hash function
+     *
+     * @see http://php.net/password_hash
+     * Defaults to PASSWORD_DEFAULT
+     *
+     * @param int $algorithm
+     */
+    public function setAlgorithm($algorithm);
+
+    /**
+     * Get the algorithm for the password_hash function
+     *
+     * @return int algorithm
+     */
+    public function getAlgorithm();
 }

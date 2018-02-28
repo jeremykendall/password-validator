@@ -63,4 +63,21 @@ abstract class AbstractDecorator implements PasswordValidatorInterface
     {
         $this->validator->setOptions($options);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAlgorithm($algorithm)
+    {
+        $this->validator->setAlgorithm($algorithm);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAlgorithm()
+    {
+        return $this->validator->getAlgorithm() ?: PASSWORD_DEFAULT;
+    }
+
 }

@@ -11,7 +11,9 @@
 namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
+use JeremyKendall\Password\PasswordValidatorInterface;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * This test validates the upgrade scenario outlined in Daniel Karp's blog post
@@ -22,9 +24,17 @@ use JeremyKendall\Password\Result as ValidationResult;
  * test the plain text password's legacy hash against the upgraded, persisted
  * hash.
  */
-class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
+class KarptoniteRehashUpgradeDecoratorTest extends TestCase
 {
+
+    /**
+     * @var UpgradeDecorator
+     */
     private $decorator;
+
+    /**
+     * @var PasswordValidatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $decoratedValidator;
     private $validationCallback;
     private $plainTextPassword;
@@ -33,8 +43,6 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        parent::setUp();
-
         $this->validationCallback = function ($credential, $passwordHash, $salt) {
             // Recreate the legacy hash. This was the persisted password hash
             // prior to upgrading.
@@ -48,8 +56,7 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
             return false;
         };
 
-        $interface = 'JeremyKendall\Password\PasswordValidatorInterface';
-        $this->decoratedValidator = $this->getMockBuilder($interface)
+        $this->decoratedValidator = $this->getMockBuilder(PasswordValidatorInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -128,6 +135,8 @@ class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider callbackDataProvider
+     * @param string $password
+     * @param bool $result
      */
     public function testVerifyValidationCallback($password, $result)
     {

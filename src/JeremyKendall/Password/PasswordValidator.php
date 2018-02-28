@@ -10,7 +10,6 @@
 
 namespace JeremyKendall\Password;
 
-use JeremyKendall\Password\PasswordHashFailureException;
 use JeremyKendall\Password\Result as ValidationResult;
 
 /**
@@ -29,6 +28,11 @@ class PasswordValidator implements PasswordValidatorInterface
     protected $resultInfo = array();
 
     /**
+     * @var int algorithm for password_hash
+     */
+    protected $algorithm = PASSWORD_DEFAULT;
+
+    /**
      * {@inheritDoc}
      */
     public function isValid($password, $passwordHash, $legacySalt = null, $identity = null)
@@ -41,8 +45,8 @@ class PasswordValidator implements PasswordValidatorInterface
         $isValid = password_verify($password, $passwordHash);
 
         $needsRehash = password_needs_rehash(
-            $passwordHash, 
-            PASSWORD_DEFAULT, 
+            $passwordHash,
+            $this->algorithm,
             $this->getOptions()
         );
 
@@ -67,7 +71,7 @@ class PasswordValidator implements PasswordValidatorInterface
     {
         $hash = password_hash(
             $password,
-            PASSWORD_DEFAULT,
+            $this->algorithm,
             $this->getOptions()
         );
 
@@ -101,4 +105,21 @@ class PasswordValidator implements PasswordValidatorInterface
     {
         $this->options = $options;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAlgorithm($algorithm)
+    {
+        $this->algorithm = $algorithm;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAlgorithm()
+    {
+        return $this->algorithm;
+    }
+
 }

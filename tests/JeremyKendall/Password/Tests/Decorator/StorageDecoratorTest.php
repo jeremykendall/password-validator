@@ -11,25 +11,34 @@
 namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\StorageDecorator;
+use JeremyKendall\Password\PasswordValidatorInterface;
 use JeremyKendall\Password\Result as ValidationResult;
+use JeremyKendall\Password\Storage\IdentityMissingException;
 use JeremyKendall\Password\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 
-class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
+class StorageDecoratorTest extends TestCase
 {
+
+    /**
+     * @var StorageDecorator
+     */
     protected $decorator;
 
+    /**
+     * @var PasswordValidatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected $decoratedValidator;
 
+    /**
+     * @var StorageInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected $storage;
 
     protected function setUp()
     {
-        parent::setUp();
-
-        $this->storage = $this->getMock('JeremyKendall\Password\Storage\StorageInterface');
-        $this->decoratedValidator = $this->getMockBuilder('JeremyKendall\Password\PasswordValidatorInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->storage = $this->createMock(StorageInterface::class);
+        $this->decoratedValidator = $this->createMock(PasswordValidatorInterface::class);
         $this->decorator = new StorageDecorator(
             $this->decoratedValidator,
             $this->storage
@@ -63,10 +72,8 @@ class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function testFailureToProvideIdentityThrowsException()
     {
-        $this->setExpectedException(
-            'JeremyKendall\Password\Storage\IdentityMissingException',
-            'The StorageDecorator requires an $identity argument.'
-        );
+        $this->expectException(IdentityMissingException::class);
+        $this->expectExceptionMessage('The StorageDecorator requires an $identity argument.');
 
         $valid = new ValidationResult(
             ValidationResult::SUCCESS_PASSWORD_REHASHED,
@@ -81,6 +88,6 @@ class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
             ->with('password', 'passwordHash')
             ->will($this->returnValue($valid));
 
-        $result = $this->decorator->isValid('password', 'passwordHash');
+        $this->decorator->isValid('password', 'passwordHash');
     }
 }
