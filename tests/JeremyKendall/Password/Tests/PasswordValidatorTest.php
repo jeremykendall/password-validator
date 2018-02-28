@@ -42,7 +42,7 @@ class PasswordValidatorTest extends TestCase
 
     public function testPasswordIsValidDoesNotNeedRehashWithAlgorithm()
     {
-        if (PHP_MAJOR_VERSION === 7 && PHP_MINOR_VERSION < 2) {
+        if (!defined('PASSWORD_ARGON2I')) {
             $this->markTestSkipped('PASSWORD_ARGON2I is only available for PHP >= 7.2');
         }
         $passwordHash = password_hash('password', PASSWORD_ARGON2I);
@@ -95,7 +95,7 @@ class PasswordValidatorTest extends TestCase
 
     public function testPasswordIsValidAndIsRehashedBecauseAlgorithm()
     {
-        if (PHP_MAJOR_VERSION === 7 && PHP_MINOR_VERSION < 2) {
+        if (!defined('PASSWORD_ARGON2I')) {
             $this->markTestSkipped('PASSWORD_ARGON2I is only available for PHP >= 7.2');
         }
         $options = ['cost' => 9];

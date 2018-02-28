@@ -4,10 +4,6 @@ php:
   - 7.1
   - 7.2
 
-before_install:
-  # Fix Argon2i password hasher in TravisCi PHP version
-  - composer require paragonie/sodium_compat
-
 before_script:
   - composer self-update
   - composer install --prefer-dist
