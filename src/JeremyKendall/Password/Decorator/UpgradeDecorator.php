@@ -55,7 +55,7 @@ class UpgradeDecorator extends AbstractDecorator
 
         return $this->validator->isValid($password, $passwordHash, $legacySalt, $identity);
     }
-    
+
     /**
      * This method returns an upgraded password, one that is hashed by the
      * password_hash method in such a way that it forces the PasswordValidator
@@ -77,6 +77,6 @@ class UpgradeDecorator extends AbstractDecorator
             $cost++;
         }
 
-        return password_hash($password, PASSWORD_DEFAULT, array('cost' => $cost));
+        return password_hash($password, $this->getAlgorithm(), array('cost' => $cost));
     }
 }

@@ -12,14 +12,17 @@ namespace JeremyKendall\Password\Tests;
 
 use JeremyKendall\Password\PasswordValidator;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
-class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
+class PasswordValidatorTest extends TestCase
 {
+    /**
+     * @var PasswordValidator
+     */
     private $validator;
 
     protected function setUp()
     {
-        parent::setUp();
         $this->validator = new PasswordValidator();
     }
 
@@ -31,7 +34,22 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS, 
+            ValidationResult::SUCCESS,
+            $result->getCode()
+        );
+        $this->assertNull($result->getPassword());
+    }
+
+    public function testPasswordIsValidDoesNotNeedRehashWithAlgorithm()
+    {
+        $passwordHash = password_hash('password', PASSWORD_ARGON2I);
+
+        $this->validator->setAlgorithm(PASSWORD_ARGON2I);
+        $result = $this->validator->isValid('password', $passwordHash);
+
+        $this->assertTrue($result->isValid());
+        $this->assertEquals(
+            ValidationResult::SUCCESS,
             $result->getCode()
         );
         $this->assertNull($result->getPassword());
@@ -47,7 +65,7 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS_PASSWORD_REHASHED, 
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
             $result->getCode()
         );
         $this->assertStringStartsWith('$2y$10$', $result->getPassword());
@@ -66,10 +84,29 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS, 
+            ValidationResult::SUCCESS,
             $result->getCode()
         );
         $this->assertNull($result->getPassword());
+    }
+
+    public function testPasswordIsValidAndIsRehashedBecauseAlgorithm()
+    {
+        $options = ['cost' => 9];
+        $passwordHash = password_hash('password', PASSWORD_DEFAULT, $options);
+        $this->assertStringStartsWith('$2y$09$', $passwordHash);
+
+        $this->validator->setAlgorithm(PASSWORD_ARGON2I);
+        $result = $this->validator->isValid('password', $passwordHash);
+
+        $this->assertTrue($result->isValid());
+        $this->assertEquals(
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
+            $result->getCode()
+        );
+        $this->assertStringStartsWith('$argon2i$v=19$m=1024,t=2,p=', $result->getPassword());
+        // Rehashed password is a valid hash
+        $this->assertTrue(password_verify('password', $result->getPassword()));
     }
 
     public function testPasswordIsInvalid()
@@ -80,7 +117,7 @@ class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($result->isValid());
         $this->assertEquals(
-            ValidationResult::FAILURE_PASSWORD_INVALID, 
+            ValidationResult::FAILURE_PASSWORD_INVALID,
             $result->getCode()
         );
         $this->assertNull($result->getPassword());

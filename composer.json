@@ -27,13 +27,12 @@
         "bin/version-check"
     ],
     "require": {
-        "php": ">=5.3.7",
-        "ircmaxell/password-compat": "1.*",
-        "wp-cli/php-cli-tools": "0.10.*"
+        "php": ">=7.0.0",
+        "wp-cli/php-cli-tools": "0.11.*"
     },
     "require-dev": {
         "league/phpunit-coverage-listener": "~1.1",
-        "phpunit/phpunit": "4.*"
+        "phpunit/phpunit": "7.*"
     },
     "autoload": {
         "psr-0": {

@@ -11,19 +11,27 @@
 namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
+use JeremyKendall\Password\PasswordValidatorInterface;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
-class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
+class UpgradeDecoratorTest extends TestCase
 {
+
+    /**
+     * @var UpgradeDecorator
+     */
     private $decorator;
 
+    /**
+     * @var PasswordValidatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $decoratedValidator;
 
     private $validationCallback;
 
     protected function setUp()
     {
-        parent::setUp();
         $this->validationCallback = function ($credential, $passwordHash) {
             if (hash('sha512', $credential) === $passwordHash) {
                 return true;
@@ -31,10 +39,8 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
             return false;
         };
- 
-        $this->decoratedValidator = $this->getMockBuilder('JeremyKendall\Password\PasswordValidatorInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+
+        $this->decoratedValidator = $this->createMock(PasswordValidatorInterface::class);
 
         $this->decorator = new UpgradeDecorator(
             $this->decoratedValidator,
@@ -63,7 +69,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS_PASSWORD_REHASHED, 
+            ValidationResult::SUCCESS_PASSWORD_REHASHED,
             $result->getCode()
         );
         // Rehashed password is a valid hash
@@ -115,7 +121,7 @@ class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isValid());
         $this->assertEquals(
-            ValidationResult::SUCCESS, 
+            ValidationResult::SUCCESS,
             $result->getCode()
         );
         $this->assertNull($result->getPassword());
