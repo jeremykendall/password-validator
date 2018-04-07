@@ -15,11 +15,12 @@ use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Decorator\StorageDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
 use JeremyKendall\Password\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group integration
  */
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends TestCase
 {
     protected $storage;
 

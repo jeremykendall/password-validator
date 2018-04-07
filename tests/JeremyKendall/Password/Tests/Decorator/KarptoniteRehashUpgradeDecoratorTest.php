@@ -12,6 +12,7 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * This test validates the upgrade scenario outlined in Daniel Karp's blog post
@@ -22,7 +23,7 @@ use JeremyKendall\Password\Result as ValidationResult;
  * test the plain text password's legacy hash against the upgraded, persisted
  * hash.
  */
-class KarptoniteRehashUpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
+class KarptoniteRehashUpgradeDecoratorTest extends TestCase
 {
     private $decorator;
     private $decoratedValidator;

@@ -11,8 +11,9 @@
 namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\AbstractDecorator;
+use PHPUnit\Framework\TestCase;
 
-class AbstractDecoratorTest extends \PHPUnit_Framework_TestCase
+class AbstractDecoratorTest extends TestCase
 {
     private $decorator;
 

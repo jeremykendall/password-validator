@@ -12,8 +12,9 @@ namespace JeremyKendall\Password\Tests;
 
 use JeremyKendall\Password\PasswordValidator;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
-class PasswordValidatorTest extends \PHPUnit_Framework_TestCase
+class PasswordValidatorTest extends TestCase
 {
     private $validator;
 

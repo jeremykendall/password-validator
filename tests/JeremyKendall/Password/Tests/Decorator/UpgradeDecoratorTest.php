@@ -12,8 +12,9 @@ namespace JeremyKendall\Password\Tests\Decorator;
 
 use JeremyKendall\Password\Decorator\UpgradeDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
+use PHPUnit\Framework\TestCase;
 
-class UpgradeDecoratorTest extends \PHPUnit_Framework_TestCase
+class UpgradeDecoratorTest extends TestCase
 {
     private $decorator;
 

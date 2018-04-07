@@ -13,8 +13,9 @@ namespace JeremyKendall\Password\Tests\Decorator;
 use JeremyKendall\Password\Decorator\StorageDecorator;
 use JeremyKendall\Password\Result as ValidationResult;
 use JeremyKendall\Password\Storage\StorageInterface;
+use PHPUnit\Framework\TestCase;
 
-class StorageDecoratorTest extends \PHPUnit_Framework_TestCase
+class StorageDecoratorTest extends TestCase
 {
     protected $decorator;
 
